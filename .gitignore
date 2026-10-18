@@ -1,0 +1,24 @@
+# data and warehouse files
+data/*
+!data/README.md
+*.duckdb
+*.duckdb.wal
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+logs/
+
+# secrets
+.env
+
+# os
+.DS_Store
