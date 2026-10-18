@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: >
+      One row per transfer: typed, renamed, account keys built as bank-account, currencies mapped to
+      ISO codes and payment formats in snake_case. Incremental by transaction_date.
+    columns:
+      - name: transaction_id
+        description: Stable unique key from the partitioner.
+        data_tests: [unique, not_null]
+      - name: transaction_date
+        data_tests: [not_null]
+      - name: from_account_id
+        description: Sender key, bank code plus account id (account ids are only unique within a bank).
+        data_tests: [not_null]
+      - name: to_account_id
+        data_tests: [not_null]
+      - name: payment_format
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [ach, bitcoin, cash, cheque, credit_card, reinvestment, wire]
+      - name: payment_currency
+        description: ISO code. A null here means the raw currency is missing from the currency_codes seed.
+        data_tests:
+          - not_null
+          - accepted_values: &currencies
+              arguments:
+                values: [AUD, BRL, BTC, CAD, CHF, CNY, EUR, GBP, ILS, INR, JPY, MXN, RUB, SAR, USD]
+      - name: receiving_currency
+        data_tests:
+          - not_null
+          - accepted_values: *currencies
+      - name: amount_paid
+        data_tests: [not_null, non_negative]
+      - name: amount_received
+        data_tests: [not_null, non_negative]
+
+  - name: stg_laundering_patterns
+    description: Transactions that belong to a labeled laundering attempt, with the attempt's typology.
+    columns:
+      - name: typology
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [bipartite, cycle, fan_in, fan_out, gather_scatter, random, scatter_gather, stack]

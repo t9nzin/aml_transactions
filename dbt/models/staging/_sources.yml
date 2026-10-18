@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Loaded one day at a time by scripts/load_day.py (Airflow task load_day).
+    tables:
+      - name: transactions
+        description: Daily partitions of the IBM AML transactions CSV, columns renamed by position.
+        loaded_at_field: loaded_at
+        columns:
+          - name: transaction_id
+            description: MD5 of all raw fields plus an ordinal among exact duplicates.
+            data_tests: [unique, not_null]
+          - name: transaction_date
+            data_tests: [not_null]
+      - name: laundering_patterns
+        description: Laundering attempts parsed from the patterns file (scripts/parse_patterns.py).

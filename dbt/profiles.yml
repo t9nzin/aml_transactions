@@ -1,0 +1,19 @@
+# Switch warehouses with --target (dev = DuckDB, prod = Snowflake). No model code changes.
+aml_monitoring:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('AML_DUCKDB_PATH', '../data/warehouse/aml.duckdb') }}"
+      schema: main
+      threads: 4
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', '') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', '') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD', '') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'AML_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'AML_WH') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'AML') }}"
+      schema: analytics
+      threads: 4

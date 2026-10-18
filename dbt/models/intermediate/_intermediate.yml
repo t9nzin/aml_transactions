@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: int_currency_rates
+    description: USD per unit of each currency, derived from cross-currency transfers into USD.
+    columns:
+      - name: currency_code
+        data_tests: [unique, not_null]
+      - name: usd_per_unit
+        data_tests: [not_null, non_negative]
+
+  - name: int_transactions_usd
+    description: Staged transactions with the paid amount converted to USD.
+    columns:
+      - name: amount_usd
+        description: Null only if a currency has no USD rate; the test makes that loud.
+        data_tests: [not_null]
+
+  - name: int_account_transactions
+    description: One row per account side of a transfer (direction = out for sender, in for receiver).
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [transaction_id, direction]
+    columns:
+      - name: transaction_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_transactions')
+                field: transaction_id
+      - name: direction
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [in, out]
+
+  - name: int_account_day_activity
+    description: Per account and day, counts and USD volumes sent and received.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [account_id, transaction_date]
+
+  - name: int_counterparty_edges
+    description: Directed sender to receiver edges (counts, USD totals, first and last transfer).
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [from_account_id, to_account_id]
+
+  - name: int_pattern_transactions
+    description: Laundering-attempt transactions from the patterns file, matched to staging ids.
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('stg_transactions')
+                field: transaction_id

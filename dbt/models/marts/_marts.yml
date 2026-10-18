@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: fct_account_features
+    description: >
+      Account-level features per tumbling window over the modeling period (Sep 1-10 for HI-Small).
+      Features and label come from the same window. Columns prefixed label_ are outcomes.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [account_id, window_start]
+    columns:
+      - name: account_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_accounts')
+                field: account_id
+      - name: window_start
+        data_tests: [not_null]
+      - name: fan_out
+        description: Distinct counterparties the account sent to (self-transfers excluded).
+        data_tests: [non_negative]
+      - name: fan_in
+        description: Distinct counterparties the account received from (self-transfers excluded).
+        data_tests: [non_negative]
+      - name: usd_out_total
+        data_tests: [non_negative]
+      - name: usd_in_total
+        data_tests: [non_negative]
+      - name: flow_balance
+        description: min(out, in) / max(out, in); 1 means everything received was sent on.
+      - name: max_tx_per_hour
+        description: Most transfers the account made or received in any single clock hour.
+      - name: is_suspicious
+        description: Label. 1 if the account sent or received any laundering transfer in the window.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: dim_accounts
+    description: One row per account (bank-account) seen anywhere in the data.
+    columns:
+      - name: account_id
+        data_tests: [unique, not_null]
+
+  - name: mart_daily_volume
+    description: Daily transfer counts, USD volume and laundering share. Dashboard source.
+    columns:
+      - name: transaction_date
+        data_tests: [unique, not_null]
+
+  - name: mart_laundering_by_format_currency
+    description: Laundering rate by payment format and payment currency over the modeling period.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [payment_format, payment_currency]
+
+  - name: mart_typology_summary
+    description: Laundering attempts, transfers and USD volume by typology (from the patterns file).
+    columns:
+      - name: typology
+        data_tests: [unique, not_null]

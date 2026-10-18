@@ -1,0 +1,10 @@
+version: 2
+
+seeds:
+  - name: currency_codes
+    description: Maps the dataset's currency names to ISO 4217 codes (BTC for Bitcoin).
+    columns:
+      - name: currency_name
+        data_tests: [unique, not_null]
+      - name: currency_code
+        data_tests: [unique, not_null]

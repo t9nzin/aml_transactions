@@ -1,0 +1,36 @@
+name: aml_monitoring
+version: "1.0.0"
+config-version: 2
+profile: aml_monitoring
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Chosen in notebooks/01_eda.ipynb and mirrored in src/aml/config.py.
+  # Sep 11-18 is a laundering-only tail, so features stop at Sep 10.
+  modeling_start: "2022-09-01"
+  modeling_end: "2022-09-10"
+  window_days: 5
+  # Set by Airflow (--vars '{run_date: 2022-09-03}') to rebuild a single day of staging.
+  run_date: null
+
+models:
+  aml_monitoring:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: table
+    marts:
+      +schema: marts
+      +materialized: table
+
+seeds:
+  aml_monitoring:
+    +schema: reference
