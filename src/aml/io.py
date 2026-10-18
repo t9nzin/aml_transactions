@@ -63,11 +63,13 @@ def write_table(df: pd.DataFrame, name: str, schema: str = OUTPUT_SCHEMA) -> Non
             con.cursor().execute(f"create schema if not exists {schema}")
             write_pandas(
                 con,
-                df.rename(columns=str.upper),
+                df,
                 table_name=name.upper(),
                 schema=schema.upper(),
                 auto_create_table=True,
                 overwrite=True,
+                quote_identifiers=False,
+                use_logical_type=True,
             )
         return
     with duckdb.connect(_duckdb_path()) as con:

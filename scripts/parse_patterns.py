@@ -13,6 +13,7 @@ Each transaction line has the same layout as the transactions CSV.
 """
 
 import argparse
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -67,14 +68,28 @@ def parse(path: Path) -> pd.DataFrame:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("patterns", type=Path)
-    parser.add_argument("--warehouse", type=Path, default=DEFAULT_WAREHOUSE)
+    parser.add_argument("--warehouse", type=Path, default=DEFAULT_WAREHOUSE,
+                        help="DuckDB file (AML_DUCKDB_PATH overrides)")
+    parser.add_argument("--target", choices=["dev", "prod"], default="dev")
     args = parser.parse_args()
 
     df = parse(args.patterns)
-    args.warehouse.parent.mkdir(parents=True, exist_ok=True)
-    with duckdb.connect(str(args.warehouse)) as con:
-        con.execute("create schema if not exists raw")
-        con.execute("create or replace table raw.laundering_patterns as select * from df")
+    if args.target == "prod":
+        from load_day import snowflake_connection
+        from snowflake.connector.pandas_tools import write_pandas
+
+        con = snowflake_connection()
+        try:
+            write_pandas(con, df, "LAUNDERING_PATTERNS", schema="RAW", auto_create_table=True,
+                         overwrite=True, quote_identifiers=False, use_logical_type=True)
+        finally:
+            con.close()
+    else:
+        warehouse = Path(os.environ.get("AML_DUCKDB_PATH", args.warehouse))
+        warehouse.parent.mkdir(parents=True, exist_ok=True)
+        with duckdb.connect(str(warehouse)) as con:
+            con.execute("create schema if not exists raw")
+            con.execute("create or replace table raw.laundering_patterns as select * from df")
     print(f"{df.attempt_id.nunique()} attempts, {len(df):,} transactions")
 
 
