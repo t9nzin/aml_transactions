@@ -26,3 +26,6 @@ dbt-docs:
 
 test:
 	uv run pytest
+
+train:
+	uv run python -m aml.train

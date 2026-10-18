@@ -1,0 +1,135 @@
+{
+  "train_window": "2022-09-01",
+  "test_window": "2022-09-06",
+  "window_days": 5,
+  "graph_features": true,
+  "hgb_params": {
+    "learning_rate": 0.1,
+    "max_leaf_nodes": 63,
+    "class_weight": "balanced"
+  },
+  "alert_budget": 357,
+  "train_rows": 512312,
+  "train_positives": 2799,
+  "test_rows": 372954,
+  "test_positives": 3357,
+  "random_caught_at_budget": 3.2,
+  "metrics": [
+    {
+      "model": "hist_gradient_boosting",
+      "pr_auc": 0.2654,
+      "roc_auc": 0.8755,
+      "prevalence": 0.009,
+      "recall_at_precision_50": 0.1942,
+      "recall_at_precision_80": 0.1597
+    },
+    {
+      "model": "random_forest",
+      "pr_auc": 0.2095,
+      "roc_auc": 0.86,
+      "prevalence": 0.009,
+      "recall_at_precision_50": 0.118,
+      "recall_at_precision_80": 0.0935
+    },
+    {
+      "model": "statsmodels_logit",
+      "pr_auc": 0.0902,
+      "roc_auc": 0.8185,
+      "prevalence": 0.009,
+      "recall_at_precision_50": 0.0209,
+      "recall_at_precision_80": 0.0122
+    },
+    {
+      "model": "logistic_regression",
+      "pr_auc": 0.0864,
+      "roc_auc": 0.8264,
+      "prevalence": 0.009,
+      "recall_at_precision_50": 0.014,
+      "recall_at_precision_80": 0.0089
+    },
+    {
+      "model": "isolation_forest",
+      "pr_auc": 0.0196,
+      "roc_auc": 0.6335,
+      "prevalence": 0.009,
+      "recall_at_precision_50": 0.0048,
+      "recall_at_precision_80": 0.0042
+    },
+    {
+      "model": "rule_total_volume",
+      "pr_auc": 0.0163,
+      "roc_auc": 0.6986,
+      "prevalence": 0.009,
+      "recall_at_precision_50": 0.0,
+      "recall_at_precision_80": 0.0
+    }
+  ],
+  "alert_budget_results": [
+    {
+      "model": "hist_gradient_boosting",
+      "budget": 357,
+      "threshold": 0.9723,
+      "alerts": 357,
+      "caught": 347,
+      "positives": 3357,
+      "precision": 0.972,
+      "recall": 0.1034,
+      "lift_over_random": 107.9854
+    },
+    {
+      "model": "random_forest",
+      "budget": 357,
+      "threshold": 0.4522,
+      "alerts": 357,
+      "caught": 299,
+      "positives": 3357,
+      "precision": 0.8375,
+      "recall": 0.0891,
+      "lift_over_random": 93.048
+    },
+    {
+      "model": "statsmodels_logit",
+      "budget": 357,
+      "threshold": 0.2249,
+      "alerts": 357,
+      "caught": 111,
+      "positives": 3357,
+      "precision": 0.3109,
+      "recall": 0.0331,
+      "lift_over_random": 34.5429
+    },
+    {
+      "model": "logistic_regression",
+      "budget": 357,
+      "threshold": 0.9962,
+      "alerts": 357,
+      "caught": 108,
+      "positives": 3357,
+      "precision": 0.3025,
+      "recall": 0.0322,
+      "lift_over_random": 33.6093
+    },
+    {
+      "model": "isolation_forest",
+      "budget": 357,
+      "threshold": 0.5985,
+      "alerts": 357,
+      "caught": 33,
+      "positives": 3357,
+      "precision": 0.0924,
+      "recall": 0.0098,
+      "lift_over_random": 10.2695
+    },
+    {
+      "model": "rule_total_volume",
+      "budget": 357,
+      "threshold": 370272508.472,
+      "alerts": 357,
+      "caught": 22,
+      "positives": 3357,
+      "precision": 0.0616,
+      "recall": 0.0066,
+      "lift_over_random": 6.8463
+    }
+  ]
+}
