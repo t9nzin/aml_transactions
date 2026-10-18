@@ -29,3 +29,6 @@ test:
 
 train:
 	uv run python -m aml.train
+
+export-dashboard:
+	uv run python -m aml.export
